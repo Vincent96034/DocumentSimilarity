@@ -6,7 +6,7 @@ class TextDoc:
     body: str
 
     def __repr__(self):
-        return f'TextDoc({len(self.body)}): {str(self.body)[:65]} ...'
+        return f'TextDoc({len(self.body)}): {str(self.body)[:55]} ...'
 
 
 @dataclass
@@ -14,4 +14,4 @@ class TextDocEmbedded:
     body: list
 
     def __repr__(self):
-        return f'TextDocEmbedded(,{len(self.body)}): {str(self.body)[:65]} ...]'
+        return f'TextDocEmbedded(,{len(self.body)}): {str(self.body)[:55]} ...]'

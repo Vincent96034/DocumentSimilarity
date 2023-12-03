@@ -1,3 +1,15 @@
+"""This module contains a list of common English stopwords.
+
+Stopwords are words that are commonly used in natural language but do not carry
+significant meaning or contribute to the overall understanding of a text. These words are
+often removed from text data during preprocessing to improve the performance of natural
+language processing tasks such as text classification or information retrieval.
+
+The list 'stopwords_en' contains a collection of common English stopwords that can be used
+for text preprocessing tasks.
+
+Source: https://gist.github.com/sebleier/554280
+"""
 
 
 stopwords_en = [

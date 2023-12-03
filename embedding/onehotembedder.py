@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from tqdm import tqdm
 import numpy as np
 from sklearn.decomposition import PCA
 
@@ -19,15 +20,19 @@ class OneHotEmbedder(AbstractEmbedder):
         corpus_dim (int): The dimension of the corpus.
         vector_dim (Optional[int]): The dimension of the vector for PCA. If None, PCA is
             not applied.
+        encoding_method (str): The encoding method to use. `one-hot` only indicates if a
+            word is in the document or not. `additive` indicates the number of times a
+            word appears in the document.
         _pca (Optional[PCA]): The PCA model for dimensionality reduction.
         _data (Optional[np.ndarray]): The document-term matrix used for PCA fitting.
     """
 
-    def __init__(self, vector_dim: Optional[int] = None):
+    def __init__(self, vector_dim: Optional[int] = None, encoding_method: str = "one-hot"):
         super().__init__()
         self.corpus = {}
         self.corpus_dim = 0
         self.vector_dim = vector_dim
+        self.encoding_method = "one-hot"
         self._pca = None
         self._data = None
 
@@ -38,8 +43,12 @@ class OneHotEmbedder(AbstractEmbedder):
 
         Args:
             docs (List[TextDoc]): A list of `TextDoc` objects to fit the embedder.
+
+        Returns:
+            None
         """
-        docs = [self._preprocess(doc) for doc in docs]
+        logger.info("Fitting embedder. Preprocessing documents...")
+        docs = [self._preprocess(doc) for doc in tqdm(docs)]
         n_docs = len(docs)
         words = [word for doc in docs for word in doc]
         bow = list(set(words))
@@ -47,9 +56,12 @@ class OneHotEmbedder(AbstractEmbedder):
             if word not in self.corpus:
                 self.corpus[word] = len(self.corpus)
         self.corpus_dim = len(self.corpus)
-
+        logger.info(
+            f"Corpus created with {self.corpus_dim} words.")
         # Creating document-term matrix for PCA
         if self.vector_dim:
+            logger.info(
+                f"Reducing vector dimensions: fitting PCA with {self.vector_dim}")
             if self.vector_dim > n_docs:
                 logger.warning(
                     (f'`vector_dim` ({self.vector_dim}) is greater than the number of '
