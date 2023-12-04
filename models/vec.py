@@ -73,3 +73,6 @@ class Vector:
             embedding=self.embedding * scalar,
             data=self.data
         )
+
+    def __repr__(self):
+        return f"<Vector {self.vec_id} ({self.vector_dim}){f' : {self.data}' if self.data else ''}>"

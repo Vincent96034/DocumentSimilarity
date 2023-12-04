@@ -22,5 +22,12 @@ class MeasureFactory:
 
         Returns:
             AbstractMeasure: The measure object corresponding to the given name.
+
+        Raises:
+            ValueError: If the name does not exist in the dictionary.
         """
-        return MeasureFactory.MEASURES.get(name, ValueError(f"Measure {name} not found."))
+        measure = MeasureFactory.MEASURES.get(name)
+        if measure is None:
+            raise ValueError(f"Measure '{name}' does not exist. Please choose from "
+                             f"{list(MeasureFactory.MEASURES.keys())}")
+        return measure

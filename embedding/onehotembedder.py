@@ -61,7 +61,7 @@ class OneHotEmbedder(AbstractEmbedder):
         # Creating document-term matrix for PCA
         if self.vector_dim:
             logger.info(
-                f"Reducing vector dimensions: fitting PCA with {self.vector_dim}")
+                f"Reducing vector dimensions: fitting PCA (n={self.vector_dim})")
             if self.vector_dim > n_docs:
                 logger.warning(
                     (f'`vector_dim` ({self.vector_dim}) is greater than the number of '
