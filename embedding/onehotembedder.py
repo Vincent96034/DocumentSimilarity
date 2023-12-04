@@ -20,19 +20,19 @@ class OneHotEmbedder(AbstractEmbedder):
         corpus_dim (int): The dimension of the corpus.
         vector_dim (Optional[int]): The dimension of the vector for PCA. If None, PCA is
             not applied.
-        encoding_method (str): The encoding method to use. `one-hot` only indicates if a
+        embedding_method (str): The embedding method to use. `one-hot` only indicates if a
             word is in the document or not. `additive` indicates the number of times a
             word appears in the document.
         _pca (Optional[PCA]): The PCA model for dimensionality reduction.
         _data (Optional[np.ndarray]): The document-term matrix used for PCA fitting.
     """
 
-    def __init__(self, vector_dim: Optional[int] = None, encoding_method: str = "one-hot"):
+    def __init__(self, vector_dim: Optional[int] = None, embedding_method: str = "one-hot"):
         super().__init__()
         self.corpus = {}
         self.corpus_dim = 0
         self.vector_dim = vector_dim
-        self.encoding_method = "one-hot"
+        self.embedding_method = self._check_embedding_method(embedding_method)
         self._pca = None
         self._data = None
 
@@ -68,13 +68,34 @@ class OneHotEmbedder(AbstractEmbedder):
                      f'documents ({n_docs}). Set `vector_dim` to {n_docs}.'))
                 self.vector_dim = n_docs
             self._pca = PCA(n_components=self.vector_dim)
-            doc_term_matrix = np.zeros((n_docs, self.corpus_dim))
-            for i, doc in enumerate(docs):
-                for word in doc:
-                    if word in self.corpus:
-                        doc_term_matrix[i, self.corpus[word]] += 1
+            doc_term_matrix = []
+            for doc in docs:
+                vector = self._create_vector(doc, method=self.embedding_method)
+                doc_term_matrix.append(vector)
+            doc_term_matrix = np.array(doc_term_matrix)
             self._pca.fit(doc_term_matrix)
             self._data = doc_term_matrix
+
+    def _create_vector(self, doc: List[str], method="one-hot") -> List[int]:
+        """Creates a vector representation of the given document.
+
+        Args:
+            doc (List[str]): A list of tokens representing the document.
+            method (str): The embedding method to use. `one-hot` only indicates if a
+                word is in the document or not. `additive` indicates the number of times a
+                word appears in the document.
+
+        Returns:
+            List[int]: The vector representation of the document.
+        """
+        vector = [0] * self.corpus_dim
+        for word in doc:
+            if word in self.corpus:
+                if method == "one-hot":
+                    vector[self.corpus[word]] = 1
+                elif method == "additive":
+                    vector[self.corpus[word]] += 1
+        return vector
 
     def _embed(self, doc: TextDoc) -> TextDocEmbedded:
         """Embeds a single document using one-hot encoding.
@@ -86,10 +107,7 @@ class OneHotEmbedder(AbstractEmbedder):
             TextDocEmbedded: The embedded representation of the document.
         """
         doc = self._preprocess(doc)
-        vector = [0] * self.corpus_dim
-        for word in doc:
-            if word in self.corpus:
-                vector[self.corpus[word]] += 1
+        vector = self._create_vector(doc, method=self.encoding_method)
         return self._postprocess(vector)
 
     def _preprocess(self, doc: TextDoc) -> List[str]:
@@ -129,3 +147,19 @@ class OneHotEmbedder(AbstractEmbedder):
         if self._pca:
             vector = self._pca.transform([vector])[0]
         return TextDocEmbedded(body=vector)
+
+    @staticmethod
+    def _check_embedding_method(method: str) -> str:
+        """Checks if the embedding method is valid.
+
+        Args:
+            method (str): The embedding method to check.
+
+        Returns:
+            str: The embedding method to use.
+        """
+        if method not in ["one-hot", "additive"]:
+            logger.warning(
+                f"Invalid embedding method `{method}`. Using `one-hot` instead.")
+            return "one-hot"
+        return method
