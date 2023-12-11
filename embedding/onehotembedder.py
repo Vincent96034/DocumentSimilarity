@@ -107,7 +107,7 @@ class OneHotEmbedder(AbstractEmbedder):
             TextDocEmbedded: The embedded representation of the document.
         """
         doc = self._preprocess(doc)
-        vector = self._create_vector(doc, method=self.encoding_method)
+        vector = self._create_vector(doc, method=self.embedding_method)
         return self._postprocess(vector)
 
     def _preprocess(self, doc: TextDoc) -> List[str]:
