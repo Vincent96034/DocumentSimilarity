@@ -51,7 +51,7 @@ class SimpleVectorDatabase(AbstractVectorDatabase):
             similar.values(), key=lambda x: measure.sort_func(x["score"]))
         return similar_vectors[:k]
 
-    def _get_random_vector(self) -> Vector:
+    def get_random_vector(self) -> Vector:
         """Retrieves a random vector from the database."""
         if len(self.data) == 0:
             raise ValueError("Database is empty.")

@@ -90,7 +90,7 @@ class AbstractEmbedder(ABC):
         return text
 
     @abstractmethod
-    def _fit(self, docs: list) -> None:
+    def _fit(self, docs: List[TextDoc]) -> None:
         """Fits the embedder model to the given list of documents.
 
         Args:

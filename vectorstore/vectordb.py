@@ -79,7 +79,7 @@ class AbstractVectorDatabase(ABC):
         pass
 
     @abstractmethod
-    def _get_random_vector(self) -> Vector:
+    def get_random_vector(self) -> Vector:
         """Get a random vector from the database.
 
         Args:
@@ -197,14 +197,3 @@ class AbstractVectorDatabase(ABC):
         if not isinstance(measure, AbstractMeasure):
             raise TypeError(f"Invalid type {type(measure)}")
         return self._sim_search(vector, measure, k, **kwargs)
-
-    def get_random_vector(self) -> Vector:
-        """Get a random vector from the database.
-
-        Args:
-            None
-
-        Returns:
-            A random vector from the database.
-        """
-        return self._get_random_vector()
