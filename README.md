@@ -1,7 +1,14 @@
 # Document Similarity
 
 ## How to use
-The notebook `main.ipynb` guides you through the project.
+Install the required libraries from `requirements.txt`. The needed libraries are:
+- `pandas`: For data manipulation
+- `sklearn`: For PCA
+- `tqdm`: For progress bars
+- `gensim`: For an additional embedding algorithm 'Doc2Vec'
+- `datasets`: For the training dataset (from huggingface)
+
+The notebook `main.ipynb` guides you through the project in more detail.
 
 ## Overview and Code Architecture
 In this project, our objective was to create a Python program that can compute the similarity between text documents. The program processes a corpus of documents and then, given a new search document, can return a list of documents ranked by their similarity to the search document. This task was divided into two main parts: first, creating the embeddings by fitting and training an algorithm to create vector representations of text, and second, embedding texts and storing these representations in a database-like structure for similarity searching.
