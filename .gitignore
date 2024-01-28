@@ -33,3 +33,6 @@ env/
 # Logs and databases
 *.log
 *.sqlite3
+
+# ds store
+.DS_Store
